@@ -1,0 +1,13 @@
+[Unit]
+Description=Raspi Access Point Flask Server Service
+After=network.target
+
+[Service]
+WorkingDirectory=/this/path/will/be/replaced
+ExecStart=/this/path/will/be/replaced
+Restart=on-failure
+RestartSec=10
+Environment=PORT=3000  # Set the port as an environment variable
+
+[Install]
+WantedBy=multi-user.target
