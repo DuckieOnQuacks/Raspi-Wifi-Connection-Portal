@@ -13,9 +13,9 @@ app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 
 
 # @app.before_request
-def redirect_to_hostname():
-    if request.host.split(":")[0] != HOST_NAME:
-        return redirect(f"http://{HOST_NAME}")
+# def redirect_to_hostname():
+# if request.host.split(":")[0] != HOST_NAME:
+# return redirect(f"http://{HOST_NAME}")
 
 
 #
@@ -30,11 +30,6 @@ def serve_frontend():
 @app.route("/connecttest")
 def connect_test():
     return "Success", 200
-
-
-@app.errorhandler(404)
-def handle_404(error):
-    return redirect("/")
 
 
 @app.route("/api/connect", methods=["POST"])
