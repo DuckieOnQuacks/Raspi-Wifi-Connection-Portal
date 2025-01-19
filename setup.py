@@ -37,7 +37,7 @@ def install_server_dependencies():
     ColorPrint.print(cyan, "▶ Install Flask dependencies for backend")
 
     # Ensure pip dependencies are installed
-    subprocess.call("sudo apt install -r requirements.txt", shell=True, cwd="./server")
+    subprocess.call("sudo apt install -y flask", shell=True)
 
 
 def setup_access_point():
