@@ -21,7 +21,7 @@ def print_header():
 
 def check_super_user():
     print()
-    ColorPrint.print(cyan, "▶ Check sudo")
+    ColorPrint.print(green, "▶ Check sudo")
 
     # Is root?
     if os.geteuid() != 0:
@@ -39,15 +39,36 @@ def install_apt_dependencies():
     subprocess.call("sudo apt install -y python3 python3-pip python3-venv", shell=True)
 
 
+def setup_virtual_env():
+    """Create and activate a Python virtual environment in the server directory"""
+    ColorPrint.print(cyan, "Creating a Python virtual environment...")
+
+    server_dir = os.path.abspath("server")
+    venv_dir = os.path.join(server_dir, "venv")
+
+    if not os.path.exists(venv_dir):
+        subprocess.run(f"python3 -m venv {venv_dir}", shell=True, check=True)
+        ColorPrint.print(magenta, f"Virtual environment created at {venv_dir}")
+    else:
+        ColorPrint.print(cyan, "Virtual environment already exists, skipping creation.")
+
+
 def install_python_dependencies():
-    """Install Python dependencies using pip"""
-    ColorPrint.print(green, "Installing Python dependencies using pip...")
-    subprocess.call("pip install -r requirements.txt", shell=True, cwd="./server")
+    """Install Python dependencies inside the virtual environment"""
+    ColorPrint.print(cyan, "Installing Python dependencies using pip in virtual environment...")
+
+    server_dir = os.path.abspath("server")
+    venv_bin = os.path.join(server_dir, "venv/bin")
+
+    pip_path = os.path.join(venv_bin, "pip")
+
+    subprocess.run(f"{pip_path} install --upgrade pip", shell=True, check=True)
+    subprocess.run(f"{pip_path} install -r {server_dir}/requirements.txt", shell=True, check=True)
 
 
 def setup_access_point():
     print()
-    ColorPrint.print(cyan, "▶ Setup Access Point (WiFi)")
+    ColorPrint.print(green, "▶ Setup Access Point (WiFi)")
 
     print("We will now set up the Raspi as Access Point to connect to via WiFi.")
     print("The following commands will execute as sudo user.")
@@ -62,7 +83,7 @@ def setup_access_point():
 
 def setup_server_service():
     print()
-    ColorPrint.print(cyan, "▶ Configure Flask server to start at boot")
+    ColorPrint.print(green, "▶ Configure Flask server to start at boot")
 
     # Replace path in file
     server_path = os.path.abspath("server")
@@ -92,7 +113,7 @@ def setup_server_service():
 
 def done():
     print()
-    ColorPrint.print(cyan, "▶ Done")
+    ColorPrint.print(green, "▶ Done")
 
     final_msg = (
         "Awesome, we are done here. Grab your phone and look for the\n"
@@ -106,9 +127,11 @@ def done():
 
 
 def execute_all():
+
     print_header()
     check_super_user()
     install_apt_dependencies()
+    setup_virtual_env()
     install_python_dependencies()
 
     setup_access_point()
