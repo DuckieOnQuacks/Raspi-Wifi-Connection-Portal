@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 from setup.cli import query_yes_no
-from setup.colorConsole import ColorPrint, cyan, magenta
+from setup.colorConsole import ColorPrint, cyan, magenta, green
 
 
 def print_header():
@@ -32,12 +32,17 @@ def check_super_user():
         print("Running as root user, continue.")
 
 
-def install_server_dependencies():
-    print()
-    ColorPrint.print(cyan, "▶ Install Flask dependencies for backend")
+def install_apt_dependencies():
+    """Install system dependencies using apt"""
+    ColorPrint.print(green, "Installing system dependencies using apt...")
+    subprocess.call("sudo apt update", shell=True)
+    subprocess.call("sudo apt install -y python3 python3-pip python3-venv", shell=True)
 
-    # Ensure pip dependencies are installed
-    subprocess.call("sudo apt install -y Flask", shell=True)
+
+def install_python_dependencies():
+    """Install Python dependencies using pip"""
+    ColorPrint.print(green, "Installing Python dependencies using pip...")
+    subprocess.call("pip install -r requirements.txt", shell=True, cwd="./server")
 
 
 def setup_access_point():
@@ -106,7 +111,8 @@ def execute_all():
 
     setup_access_point()
 
-    install_server_dependencies()
+    install_apt_dependencies()
+    install_python_dependencies()
     setup_server_service()
 
     done()
