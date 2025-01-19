@@ -16,7 +16,7 @@ def print_header():
     #########  & Captive Portal setup script  #########
     ###################################################
     """
-    ColorPrint.print(cyan, header)
+    ColorPrint.print(green, header)
 
 
 def check_super_user():
@@ -34,7 +34,7 @@ def check_super_user():
 
 def install_apt_dependencies():
     """Install system dependencies using apt"""
-    ColorPrint.print(green, "Installing system dependencies using apt...")
+    ColorPrint.print(cyan, "Installing system dependencies using apt...")
     subprocess.call("sudo apt update", shell=True)
     subprocess.call("sudo apt install -y python3 python3-pip python3-venv", shell=True)
 
@@ -48,7 +48,7 @@ def setup_virtual_env():
 
     if not os.path.exists(venv_dir):
         subprocess.run(f"python3 -m venv {venv_dir}", shell=True, check=True)
-        ColorPrint.print(magenta, f"Virtual environment created at {venv_dir}")
+        ColorPrint.print(cyan), f"Virtual environment created at {venv_dir}")
     else:
         ColorPrint.print(cyan, "Virtual environment already exists, skipping creation.")
 
@@ -123,7 +123,7 @@ def done():
         "and the server should be up and running again automatically.\n"
         "\n"
     )
-    ColorPrint.print(magenta, final_msg)
+    ColorPrint.print(green, final_msg)
 
 
 def execute_all():

@@ -4,23 +4,38 @@ import subprocess
 
 ############################## Setup ###########################################
 
-HOST_NAME = 'scoreboard.portal'
+HOST_NAME = "scoreboard.portal"
 FRONTEND_FOLDER = "./templates"
 
 app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 
 ############################# Middleware #######################################
 
-#@app.before_request
+
+# @app.before_request
 def redirect_to_hostname():
-    if request.host.split(':')[0] != HOST_NAME:
+    if request.host.split(":")[0] != HOST_NAME:
         return redirect(f"http://{HOST_NAME}")
+
+
 #
 ############################## Endpoints #######################################
 
+
 @app.route("/")
 def serve_frontend():
-    return send_from_directory(FRONTEND_FOLDER, 'index.html')
+    return send_from_directory(FRONTEND_FOLDER, "index.html")
+
+
+@app.route("/connecttest")
+def connect_test():
+    return "Success", 200
+
+
+@app.errorhandler(404)
+def handle_404(error):
+    return redirect("/")
+
 
 @app.route("/api/connect", methods=["POST"])
 def connect_network():
@@ -49,13 +64,14 @@ def connect_network():
 
         subprocess.run(["sudo", "systemctl", "restart", "dhcpcd"], check=True)
         print("Successfully restarted network service.")
-        
+
         return jsonify({"message": "Network configuration applied successfully."})
     except PermissionError:
         return jsonify({"message": "Permission denied. Requires root privileges."})
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"message": "Failed to apply network configuration."})
+
 
 ############################# Server Listening #################################
 
