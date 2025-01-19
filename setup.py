@@ -108,11 +108,10 @@ def done():
 def execute_all():
     print_header()
     check_super_user()
-
-    setup_access_point()
-
     install_apt_dependencies()
     install_python_dependencies()
+
+    setup_access_point()
     setup_server_service()
 
     done()
