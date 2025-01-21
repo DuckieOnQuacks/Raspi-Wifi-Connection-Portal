@@ -71,6 +71,6 @@ def connect_network():
 ############################# Server Listening #################################
 
 if __name__ == "__main__":
-    PORT = 80
+    PORT = 3000
     print(f"⚡ Raspberry Pi Server listening on port {PORT}")
     app.run(host="0.0.0.0", port=PORT, use_reloader=False)
