@@ -16,6 +16,7 @@ app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 def redirect_to_hostname():
     if request.host.split(":")[0] != HOST_NAME:
         return redirect(f"http://{HOST_NAME}")
+    return None
 
 
 ############################## Endpoints #######################################
@@ -70,6 +71,6 @@ def connect_network():
 ############################# Server Listening #################################
 
 if __name__ == "__main__":
-    PORT = 3000
+    PORT = 80
     print(f"⚡ Raspberry Pi Server listening on port {PORT}")
     app.run(host="0.0.0.0", port=PORT, use_reloader=False)
