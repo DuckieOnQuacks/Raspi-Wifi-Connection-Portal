@@ -30,7 +30,7 @@ Ensure you have the following before proceeding:
 
 ### 📦 Installation  
 
-1. **Clone the repository:**  
+1. **Clone the repository onto the Raspi:**  
    ```sh
    git clone https://github.com/DuckieOnQuacks/Raspi-Wifi-Connection-Portal.git
    cd Raspi-Wifi-Connection-Portal
