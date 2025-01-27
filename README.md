@@ -1,8 +1,8 @@
 # 📡 Raspi WiFi Connection Portal  
 
-A **Raspberry Pi WiFi Connection Portal** that allows users to connect to a Raspberry Pi device and configure WiFi settings through a simple web interface. This project is ideal for **headless Raspberry Pi setups**, making it easy to switch networks without manually editing configuration files.  
+🚧 **This project is still in development!** 🚧  
 
-🚧 **This project is still in development. Contributions and feedback are welcome!** 🚧  
+A **Raspberry Pi WiFi Connection Portal** that allows users to connect to a Raspberry Pi device and configure WiFi settings through a simple web interface. This project is ideal for **headless Raspberry Pi setups**, making it easy to switch networks without manually editing configuration files.  
 
 ---
 
