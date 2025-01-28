@@ -9,6 +9,10 @@ FRONTEND_FOLDER = "./templates"
 
 app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 
+@app.route("/")
+def serve_frontend():
+    return render_template("index.html")
+
 ############################# Middleware #######################################
 
 @app.before_request
@@ -18,6 +22,8 @@ def redirect_to_hostname():
         print(f"Redirecting to http://{HOST_NAME}")
         return redirect(f"http://{HOST_NAME}")
     return None
+
+############################## Endpoints #######################################
 
 @app.route("/hotspot-detect.html")
 def hotspot_detect():
@@ -33,12 +39,6 @@ def ncsi_txt():
 def generate_204():
     print("Received request for /generate_204")
     return "", 204
-
-############################## Endpoints #######################################
-@app.route("/")
-def serve_frontend():
-    return render_template("index.html")
-
 
 @app.route("/connecttest.txt")
 def connect_test():
