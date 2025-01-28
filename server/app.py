@@ -11,18 +11,28 @@ app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 
 ############################# Middleware #######################################
 
-
-# @app.before_request
-#def redirect_to_hostname():
-#    if request.host.split(":")[0] != HOST_NAME:
-#        return redirect(f"http://{HOST_NAME}")
-#    return None
-
 @app.before_request
 def redirect_to_hostname():
-    if request.path not in ["/connecttest.txt", "/204", "/ipv6check"]:  # Allow these requests
+    print(f"Received request for {request.path} from {request.host}")
+    if request.host.split(":")[0] != HOST_NAME:
+        print(f"Redirecting to http://{HOST_NAME}")
         return redirect(f"http://{HOST_NAME}")
+    return None
 
+@app.route("/hotspot-detect.html")
+def hotspot_detect():
+    print("Received request for /hotspot-detect.html")
+    return render_template("index.html")  # Serve your captive portal page
+
+@app.route("/ncsi.txt")
+def ncsi_txt():
+    print("Received request for /ncsi.txt")
+    return "Microsoft NCSI", 200
+
+@app.route("/generate_204")
+def generate_204():
+    print("Received request for /generate_204")
+    return "", 204
 
 ############################## Endpoints #######################################
 @app.route("/")
@@ -42,7 +52,6 @@ def ipv6_check():
 def no_content():
     return "", 204  # Return 204 No Content to signal no captive portal
 
-
 @app.route("/connect", methods=["POST"])
 def connect_network():
     data = request.get_json()
@@ -50,7 +59,7 @@ def connect_network():
     password = data.get("password")
 
     if not ssid or not password:
-        return jsonify({"message": "SSID and password are required"})
+        return jsonify({"message": "SSID and password are required"}), 400
 
     print(f"Received network configuration: {ssid}, {password}")
 
@@ -61,7 +70,6 @@ def connect_network():
         psk="{password}"
     }}
     """
-
     # Append network config to wpa_supplicant.conf
     try:
         with open("/etc/wpa_supplicant/wpa_supplicant.conf", "a") as file:
@@ -71,16 +79,15 @@ def connect_network():
         subprocess.run(["sudo", "systemctl", "restart", "dhcpcd"], check=True)
         print("Successfully restarted network service.")
 
-        return jsonify({"message": "Network configuration applied successfully."})
+        return jsonify({"message": "Network configuration applied successfully."}), 200
     except PermissionError:
-        return jsonify({"message": "Permission denied. Requires root privileges."})
+        print("Permission denied. Requires root privileges.")
+        return jsonify({"message": "Permission denied. Requires root privileges."}), 403
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({"message": "Failed to apply network configuration."})
-
+        return jsonify({"message": "Failed to apply network configuration."}), 500
 
 ############################# Server Listening #################################
-
 if __name__ == "__main__":
     PORT = 3000
     print(f"⚡ Raspberry Pi Server listening on port {PORT}")
