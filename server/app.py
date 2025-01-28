@@ -13,10 +13,15 @@ app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 
 
 # @app.before_request
+#def redirect_to_hostname():
+#    if request.host.split(":")[0] != HOST_NAME:
+#        return redirect(f"http://{HOST_NAME}")
+#    return None
+
+@app.before_request
 def redirect_to_hostname():
-    if request.host.split(":")[0] != HOST_NAME:
+    if request.path not in ["/connecttest.txt", "/204", "/ipv6check"]:  # Allow these requests
         return redirect(f"http://{HOST_NAME}")
-    return None
 
 
 ############################## Endpoints #######################################
@@ -26,10 +31,16 @@ def serve_frontend():
 
 
 @app.route("/connecttest.txt")
-def block_windows_ncsi():
-    # Windows expects "Microsoft Connect Test" and 200 OK.
-    # If we return anything else, Windows will think there is NO INTERNET.
-    return "No internet", 403  # Windows will now show the captive portal.
+def connect_test():
+    return "", 200  # Return an empty response with 200 OK
+
+@app.route("/ipv6check")
+def ipv6_check():
+    return "", 200  # Return an empty response
+
+@app.route("/204")
+def no_content():
+    return "", 204  # Return 204 No Content to signal no captive portal
 
 
 @app.route("/connect", methods=["POST"])
