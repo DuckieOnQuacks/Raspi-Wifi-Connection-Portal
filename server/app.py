@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, send_from_directory
+from flask import Flask, request, jsonify, redirect, render_template
 import os
 import subprocess
 
@@ -22,7 +22,7 @@ def redirect_to_hostname():
 ############################## Endpoints #######################################
 @app.route("/")
 def serve_frontend():
-    return send_from_directory(FRONTEND_FOLDER, "index.html")
+    return render_template("index.html")
 
 
 @app.route("/connecttest.txt")
@@ -32,7 +32,7 @@ def block_windows_ncsi():
     return "No internet", 403  # Windows will now show the captive portal.
 
 
-@app.route("/api/connect", methods=["POST"])
+@app.route("/connect", methods=["POST"])
 def connect_network():
     data = request.get_json()
     ssid = data.get("ssid")

@@ -11,7 +11,7 @@ function submitNetworkConfig() {
         password: password
     };
 
-    fetch('/api/connect', {
+    fetch('/connect', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
