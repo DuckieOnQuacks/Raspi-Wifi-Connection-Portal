@@ -54,14 +54,17 @@ def no_content():
 
 @app.route("/connect", methods=["POST"])
 def connect_network():
+    print("Received request to connect to network")
     data = request.get_json()
+    print(f"Request JSON data: {data}")
     ssid = data.get("ssid")
     password = data.get("password")
 
     if not ssid or not password:
+        print("SSID or password missing in the request")
         return jsonify({"message": "SSID and password are required"}), 400
 
-    print(f"Received network configuration: {ssid}, {password}")
+    print(f"Received network configuration: SSID={ssid}, Password={password}")
 
     # Construct the network config block
     network_config = f"""
@@ -70,39 +73,48 @@ def connect_network():
         psk="{password}"
     }}
     """
-    
+    print(f"Constructed network config: {network_config}")
+
+    # Write Wi-Fi credentials to wpa_supplicant.conf
     try:
-        # Write Wi-Fi credentials to wpa_supplicant.conf
         with open("/etc/wpa_supplicant/wpa_supplicant.conf", "a") as file:
             file.write(network_config)
         print("Successfully wrote to wpa_supplicant.conf")
+    except Exception as e:
+        print(f"Failed to write to wpa_supplicant.conf: {e}")
+        return jsonify({"message": "Failed to write network configuration"}), 500
 
-        # **Disable Access Point Mode (if running)**
+    # **Disable Access Point Mode (if running)**
+    try:
         subprocess.run(["sudo", "systemctl", "stop", "hostapd"], check=False)
         subprocess.run(["sudo", "systemctl", "disable", "hostapd"], check=False)
         print("Disabled hostapd (Access Point)")
+    except Exception as e:
+        print(f"Failed to disable hostapd: {e}")
 
-        # **Restart Wi-Fi networking services**
+    # **Restart Wi-Fi networking services**
+    try:
         subprocess.run(["sudo", "systemctl", "stop", "dhcpcd"], check=True)
         subprocess.run(["sudo", "systemctl", "stop", "wpa_supplicant"], check=True)
         subprocess.run(["sudo", "systemctl", "start", "wpa_supplicant"], check=True)
         subprocess.run(["sudo", "systemctl", "start", "dhcpcd"], check=True)
         print("Restarted Wi-Fi networking services")
+    except Exception as e:
+        print(f"Failed to restart Wi-Fi networking services: {e}")
+        return jsonify({"message": "Failed to restart Wi-Fi services"}), 500
 
-        # **Ensure connection to the new Wi-Fi**
+    # **Ensure connection to the new Wi-Fi**
+    try:
         subprocess.run(["sudo", "wpa_cli", "-i", "wlan0", "reconfigure"], check=False)
         print("Reconfigured wpa_supplicant")
-
-        # **Optional: Reboot if connection issues persist**
-        # subprocess.run(["sudo", "reboot"], check=False)
-
-        return jsonify({"message": "Network configuration applied successfully."}), 200
-    except PermissionError:
-        print("Permission denied. Requires root privileges.")
-        return jsonify({"message": "Permission denied. Requires root privileges."}), 403
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"message": "Failed to apply network configuration."}), 500
+        print(f"Failed to reconfigure wpa_supplicant: {e}")
+
+    # **Optional: Reboot if connection issues persist**
+    # subprocess.run(["sudo", "reboot"], check=False)
+
+    return jsonify({"message": "Network configuration applied successfully."}), 200
+
 
 ############################# Server Listening #################################
 if __name__ == "__main__":
