@@ -105,7 +105,7 @@ def connect_network():
 
     # **Ensure connection to the new Wi-Fi**
     try:
-        subprocess.run(["sudo", "wpa_cli", "-i", "wlan0", "reconfigure"], check=False)
+        subprocess.run(["sudo", "wpa_cli", "-i", "wlan0", "-p", "/var/run/wpa_supplicant", "reconfigure"], check=True)
         print("Reconfigured wpa_supplicant")
     except Exception as e:
         print(f"Failed to reconfigure wpa_supplicant: {e}")
