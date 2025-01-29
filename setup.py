@@ -48,7 +48,7 @@ def setup_virtual_env():
 
     if not os.path.exists(venv_dir):
         subprocess.run(f"python3 -m venv {venv_dir}", shell=True, check=True)
-        ColorPrint.print(cyan), f"Virtual environment created at {venv_dir}")
+        ColorPrint.print(cyan), f"Virtual environment created at {venv_dir}"
     else:
         ColorPrint.print(cyan, "Virtual environment already exists, skipping creation.")
 
