@@ -70,14 +70,31 @@ def connect_network():
         psk="{password}"
     }}
     """
-    # Append network config to wpa_supplicant.conf
+    
     try:
+        # Write Wi-Fi credentials to wpa_supplicant.conf
         with open("/etc/wpa_supplicant/wpa_supplicant.conf", "a") as file:
             file.write(network_config)
         print("Successfully wrote to wpa_supplicant.conf")
 
-        subprocess.run(["sudo", "systemctl", "restart", "dhcpcd"], check=True)
-        print("Successfully restarted network service.")
+        # **Disable Access Point Mode (if running)**
+        subprocess.run(["sudo", "systemctl", "stop", "hostapd"], check=False)
+        subprocess.run(["sudo", "systemctl", "disable", "hostapd"], check=False)
+        print("Disabled hostapd (Access Point)")
+
+        # **Restart Wi-Fi networking services**
+        subprocess.run(["sudo", "systemctl", "stop", "dhcpcd"], check=True)
+        subprocess.run(["sudo", "systemctl", "stop", "wpa_supplicant"], check=True)
+        subprocess.run(["sudo", "systemctl", "start", "wpa_supplicant"], check=True)
+        subprocess.run(["sudo", "systemctl", "start", "dhcpcd"], check=True)
+        print("Restarted Wi-Fi networking services")
+
+        # **Ensure connection to the new Wi-Fi**
+        subprocess.run(["sudo", "wpa_cli", "-i", "wlan0", "reconfigure"], check=False)
+        print("Reconfigured wpa_supplicant")
+
+        # **Optional: Reboot if connection issues persist**
+        # subprocess.run(["sudo", "reboot"], check=False)
 
         return jsonify({"message": "Network configuration applied successfully."}), 200
     except PermissionError:
